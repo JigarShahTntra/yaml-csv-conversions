@@ -1,0 +1,12 @@
+department:
+  rails:
+    tejasvini: '3 years'
+    chandani: '2,5 years'
+    jigar: '2 years'
+    dharmik: '2 years'
+    dipak: '2 years'
+  python:
+    nipun: '6 years'
+    pranav: '2 years'
+    mayur: '2 years'
+
