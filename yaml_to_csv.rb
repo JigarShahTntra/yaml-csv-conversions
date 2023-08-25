@@ -5,16 +5,19 @@ require 'csv'
 
 # Convert YAML Files to CSV - Arguement (YAMLFILEPATH, CSVPATHWITHNAME.CSV)
 class YamlToCsv
-  attr_reader :yaml_path, :csv_path_with_name
+  attr_reader :csv_path_with_name, :headers, :yaml_data
 
-  def initialize(yaml_path, csv_path_with_name)
+  def initialize(yaml_path, csv_path_with_name, headers = [])
     @yaml_path = yaml_path
     @csv_path_with_name = csv_path_with_name
+    @headers = headers
+    @yaml_data = YAML.load_file(yaml_path)
   end
 
   def convert
-    yaml_data = YAML.load_file(yaml_path)
     CSV.open(csv_path_with_name, 'wb') do |csv|
+      csv << headers if headers.any?
+
       traverse(yaml_data) do |keys, value|
         csv << if value =~ %r{^(.+)?(/\*\s*(.+?)\s*\*/)$}
                  [keys, Regexp.last_match(1).strip, Regexp.last_match(3).strip].flatten
@@ -49,4 +52,5 @@ class YamlToCsv
 end
 
 YamlToCsv.new('/home/er/projects/ruby/yml_to_csv/dummy-data/example.yml',
-              '/home/er/projects/ruby/yml_to_csv/dummy-data/example.csv').convert
+              '/home/er/projects/ruby/yml_to_csv/dummy-data/example.csv',
+              %w[department technology name experience]).convert
