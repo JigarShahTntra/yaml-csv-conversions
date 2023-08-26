@@ -18,7 +18,7 @@ class YamlToCsv
     CSV.open(csv_path_with_name, 'wb') do |csv|
       csv << headers if headers.any?
 
-      traverse(yaml_data) do |keys, value|
+      iterate(yaml_data) do |keys, value|
         csv << if value =~ %r{^(.+)?(/\*\s*(.+?)\s*\*/)$}
                  [keys, Regexp.last_match(1).strip, Regexp.last_match(3).strip].flatten
                else
@@ -30,22 +30,22 @@ class YamlToCsv
 
   private
 
-  def traverse(yaml_data, keys = [], &block)
+  def iterate(yaml_data, keys = [], &block)
     if [Hash, Array].include?(yaml_data.class)
-      send("#{yaml_data.class.to_s.downcase}_traverse", yaml_data, keys, &block)
+      send("#{yaml_data.class.to_s.downcase}_iterate", yaml_data, keys, &block)
     else
       yield keys, yaml_data
     end
   end
 
-  def array_traverse(yaml_data, keys, &block)
-    yaml_data.each { |_v| traverse(yaml_data, keys, &block) }
+  def array_iterate(yaml_data, keys, &block)
+    yaml_data.each { |_v| iterate(yaml_data, keys, &block) }
   end
 
-  def hash_traverse(yaml_data, keys, &block)
+  def hash_iterate(yaml_data, keys, &block)
     yaml_data.each do |k, v|
       keys << k
-      traverse(v, keys, &block)
+      iterate(v, keys, &block)
       keys.pop
     end
   end
